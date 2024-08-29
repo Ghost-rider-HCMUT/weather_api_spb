@@ -12,8 +12,4 @@ public class AppConfig {
         return new RestTemplate();
     }
 
-    @Bean
-    public String string() {
-        return "String";
-    }
 }

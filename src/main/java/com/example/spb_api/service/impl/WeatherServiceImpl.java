@@ -3,6 +3,7 @@ package com.example.spb_api.service.impl;
 import com.example.spb_api.entity.Weather;
 import com.example.spb_api.service.WeatherService;
 import com.example.spb_api.repository.WeatherRepository;
+import com.example.spb_api.util.StringUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Weather  getWeatherByCityName(String city){
-        Optional<Weather> query = weatherRepository.findById(city);
+        Optional<Weather> query = weatherRepository.findById(StringUtil.cleanString(city));
         return query.orElse(null);
     }
 
