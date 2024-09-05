@@ -1,6 +1,8 @@
 package com.example.spb_api.util;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 public class StringUtil {
@@ -28,5 +30,13 @@ public class StringUtil {
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(normalized).replaceAll("");
+    }
+
+    // Handle Date
+    public static String handleTime(String time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime currentTime = LocalDateTime.parse(time, formatter);
+        LocalDateTime timeBeforeOneDay = currentTime.minusDays(1);
+        return timeBeforeOneDay.format(formatter);
     }
 }

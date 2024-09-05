@@ -1,12 +1,20 @@
 package com.example.spb_api.service;
 
-import com.example.spb_api.entity.Weather;
+import com.example.spb_api.dto.weather.WeatherDTO;
+import com.example.spb_api.entity.WeatherEntity;
+
 import java.util.List;
 
 public interface WeatherService {
-    List<Weather> getAllCityWeather();
-    Weather getWeatherByCityName(String cityName);
-    Weather createWeather(Weather weather);
-    Weather updateWeatherByCityName(String cityName, Weather weather);
-    String deleteWeatherByCityName(String cityName);
+    List<WeatherEntity> getAllCityWeather();
+
+    WeatherDTO getWeatherByCityName(String cityName);
+
+    WeatherDTO createWeather(WeatherEntity weatherEntity);
+
+    WeatherDTO updateWeatherByCityName(String city, WeatherDTO weatherDTO);
+
+    void deleteWeatherByCityName(String cityName);
+
+    List<WeatherEntity> getWeathersByCityName(String cityName);
 }

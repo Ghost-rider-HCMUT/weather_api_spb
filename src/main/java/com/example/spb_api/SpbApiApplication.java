@@ -1,7 +1,6 @@
 package com.example.spb_api;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -15,3 +14,4 @@ public class SpbApiApplication {
     }
 
 }
+// Application Context
