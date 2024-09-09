@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -66,5 +68,5 @@ public class WeatherEntity {
 
     @Column(nullable = false)
     @JsonProperty("time")
-    private String time;
+    private LocalDateTime time;
 }

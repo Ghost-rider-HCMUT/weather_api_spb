@@ -1,12 +1,9 @@
 package com.example.spb_api.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class ErrorMessage {
-    private int statusCode;
-    private String message;
+    int statusCode;
+    String message;
 }
-

@@ -22,26 +22,24 @@ public class WeatherController {
     @GetMapping
     public ResponseEntity<Page<WeatherEntity>> getWeather(
             @RequestParam(defaultValue = "0") Integer pageNo,
-            @RequestParam(defaultValue = "10") Integer pageSize
-    ) {
+            @RequestParam(defaultValue = "10") Integer pageSize) {
         Page<WeatherEntity> weatherEntityList = weatherService.getAllCityWeather(pageNo, pageSize);
-        System.out.println(i18nUtil.getMessage("success.message"));
-        return new ResponseEntity<>(weatherEntityList, HttpStatus.OK);
+        return ResponseEntity.ok(weatherEntityList);
     }
 
     @PostMapping
-    public ResponseEntity<WeatherDTO> createWeather(@RequestBody WeatherEntity WeatherEntity) {
-        WeatherDTO weatherDTO = weatherService.createWeather(WeatherEntity);
-        return new ResponseEntity<>(weatherDTO, HttpStatus.CREATED);
+    public ResponseEntity<WeatherDTO> createWeather(@RequestBody WeatherEntity weatherEntity) {
+        WeatherDTO weatherDTO = weatherService.createWeather(weatherEntity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(weatherDTO);
     }
 
     @GetMapping("/{city}")
     public ResponseEntity<WeatherDTO> getWeatherByCity(@PathVariable String city) {
         WeatherDTO weatherDTO = weatherService.getWeatherByCityName(city);
-        return new ResponseEntity<>(weatherDTO, HttpStatus.OK);
+        return ResponseEntity.ok(weatherDTO);
     }
 
-    @PatchMapping("/{city}")
+    @PutMapping("/{city}")
     public ResponseEntity<WeatherDTO> updateWeather(@PathVariable String city, @RequestBody WeatherDTO weatherDTO) {
         WeatherDTO updatedWeatherDTO = weatherService.updateWeatherByCityName(city, weatherDTO);
         return new ResponseEntity<>(updatedWeatherDTO, HttpStatus.OK);
@@ -50,14 +48,12 @@ public class WeatherController {
     @DeleteMapping("/{city}")
     public ResponseEntity<String> deleteWeather(@PathVariable String city) {
         weatherService.deleteWeatherByCityName(city);
-        return new ResponseEntity<>("Weather data for city " + city + " deleted successfully", HttpStatus.OK);
+        return ResponseEntity.ok("Weather data for city " + city + " deleted successfully");
     }
 
-    // Feature Search
     @GetMapping("/search/{city}")
     public ResponseEntity<List<WeatherEntity>> searchWeather(@PathVariable String city) {
         List<WeatherEntity> listWeathersByCity = weatherService.getWeathersByCityName(city);
-        return new ResponseEntity<>(listWeathersByCity, HttpStatus.OK);
+        return ResponseEntity.ok(listWeathersByCity);
     }
-
 }

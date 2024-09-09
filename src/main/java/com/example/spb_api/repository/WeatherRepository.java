@@ -6,11 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-@Transactional
 public interface WeatherRepository extends JpaRepository<WeatherEntity, Long> {
     // Get All Latest
     @Query("SELECT w FROM WeatherEntity w ORDER BY w.time DESC")
@@ -18,19 +20,21 @@ public interface WeatherRepository extends JpaRepository<WeatherEntity, Long> {
 
     // Get Latest By City
     @Query("SELECT w FROM WeatherEntity w WHERE w.city = :city ORDER BY w.time DESC LIMIT 1")
-    WeatherEntity findLatestByCity(String city);
+    WeatherEntity findLatestByCity(@Param("city") String city);
 
     // Get All By City
-    @Query("SELECT w FROM WeatherEntity w WHERE w.city = :city")
-    List<WeatherEntity> findByCity(String city);
+    @Query("SELECT w FROM WeatherEntity w WHERE w.city = :city ORDER BY w.time DESC")
+    List<WeatherEntity> findByCity(@Param("city") String city);
 
     // Delete By City
     @Modifying
+    @Transactional
     @Query("DELETE FROM WeatherEntity w WHERE w.city = :city")
-    void deleteByCity(String city);
+    void deleteByCity(@Param("city") String city);
 
     // Delete By Time
     @Modifying
-    @Query("DELETE FROM WeatherEntity w WHERE w.time = :time")
-    void deleteByTime(String time);
+    @Transactional
+    @Query("DELETE FROM WeatherEntity w WHERE w.time < :time")
+    void deleteByTimeBefore(LocalDateTime time);
 }

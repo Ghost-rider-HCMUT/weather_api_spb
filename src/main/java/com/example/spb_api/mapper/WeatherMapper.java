@@ -4,11 +4,9 @@ import com.example.spb_api.dto.weather.WeatherDTO;
 import com.example.spb_api.entity.WeatherEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class WeatherMapper {
-    // Convert from Entity to DTO
+
     public WeatherDTO toDto(WeatherEntity entity) {
         return WeatherDTO.builder()
                 .city(entity.getCity())
@@ -27,24 +25,25 @@ public class WeatherMapper {
                 .build();
     }
 
-    public WeatherEntity toEntity(Optional<Long> id, WeatherDTO weatherDTO) {
-        return WeatherEntity.builder()
-                .id(id.orElse(null))
-                .city(weatherDTO.getCity())
-                .conditionWeather(weatherDTO.getConditionWeather())
-                .temp(weatherDTO.getTemp())
-                .windKph(weatherDTO.getWindKph())
-                .feelsLike(weatherDTO.getFeelsLike())
-                .pressureIn(weatherDTO.getPressureIn())
-                .humidity(weatherDTO.getHumidity())
-                .heatIndex(weatherDTO.getHeatIndex())
-                .dewPoint(weatherDTO.getDewPoint())
-                .precip(weatherDTO.getPrecip())
-                .gustKph(weatherDTO.getGustKph())
-                .isDay(weatherDTO.getIsDay())
-                .time(weatherDTO.getTime())
-                .build();
+    public WeatherEntity toEntity(WeatherDTO dto, Long id) {
+        WeatherEntity.WeatherEntityBuilder builder = WeatherEntity.builder()
+                .city(dto.getCity())
+                .conditionWeather(dto.getConditionWeather())
+                .temp(dto.getTemp())
+                .windKph(dto.getWindKph())
+                .feelsLike(dto.getFeelsLike())
+                .pressureIn(dto.getPressureIn())
+                .humidity(dto.getHumidity())
+                .heatIndex(dto.getHeatIndex())
+                .dewPoint(dto.getDewPoint())
+                .precip(dto.getPrecip())
+                .gustKph(dto.getGustKph())
+                .isDay(dto.getIsDay())
+                .time(dto.getTime());
+
+        if (id != null) {
+            builder.id(id);
+        }
+        return builder.build();
     }
-
 }
-

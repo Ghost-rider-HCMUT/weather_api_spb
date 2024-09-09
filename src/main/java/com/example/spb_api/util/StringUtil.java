@@ -33,10 +33,9 @@ public class StringUtil {
     }
 
     // Handle Date
-    public static String handleTime(String time) {
+    public static LocalDateTime handleTime(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime currentTime = LocalDateTime.parse(time, formatter);
-        LocalDateTime timeBeforeOneDay = currentTime.minusDays(1);
-        return timeBeforeOneDay.format(formatter);
+        return currentTime.minusMinutes(30);
     }
 }

@@ -6,7 +6,7 @@ import com.example.spb_api.mapper.WeatherMapper;
 import com.example.spb_api.repository.WeatherRepository;
 import com.example.spb_api.service.WeatherService;
 import com.example.spb_api.util.StringUtil;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class WeatherServiceImpl implements WeatherService {
     private final WeatherRepository weatherRepository;
@@ -29,29 +29,26 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public WeatherDTO getWeatherByCityName(String city) {
-        System.out.println(weatherRepository.findLatestByCity(StringUtil.cleanString(city)));
         WeatherEntity weatherEntity = weatherRepository.findLatestByCity(StringUtil.cleanString(city));
+        if (weatherEntity == null) {
+            throw new RuntimeException();
+        }
         return weatherMapper.toDto(weatherEntity);
     }
 
     @Override
     public WeatherDTO createWeather(WeatherEntity weatherEntity) {
-        weatherRepository.save(weatherEntity);
-        return weatherMapper.toDto(weatherEntity);
+        WeatherEntity savedEntity = weatherRepository.save(weatherEntity);
+        return weatherMapper.toDto(savedEntity);
     }
 
     @Override
     public WeatherDTO updateWeatherByCityName(String city, WeatherDTO weatherDTO) {
-        WeatherEntity weatherEntity;
-        WeatherEntity optionalWeatherEntity = weatherRepository.findLatestByCity(city);
-        if (optionalWeatherEntity != null) {
-            Long id = optionalWeatherEntity.getId();
-            weatherEntity = weatherMapper.toEntity(Optional.ofNullable(id), weatherDTO);
-            weatherRepository.save(weatherEntity);
-            return weatherDTO;
-        } else {
-            return null;
-        }
+        WeatherEntity weatherEntity = weatherRepository.findLatestByCity(city);
+        Long id = weatherEntity.getId();
+        WeatherEntity weatherEntityUpdated = weatherMapper.toEntity(weatherDTO, id);
+        weatherRepository.save(weatherEntityUpdated);
+        return weatherDTO;
     }
 
     @Override
