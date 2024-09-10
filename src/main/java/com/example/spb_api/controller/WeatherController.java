@@ -24,6 +24,7 @@ public class WeatherController {
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         Page<WeatherEntity> weatherEntityList = weatherService.getAllCityWeather(pageNo, pageSize);
+        System.out.println(i18nUtil.getMessage("success.message"));
         return ResponseEntity.ok(weatherEntityList);
     }
 

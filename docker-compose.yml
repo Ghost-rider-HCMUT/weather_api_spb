@@ -2,6 +2,9 @@ version: '4.34'
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: weather_api
     restart: always
     ports:

@@ -5,7 +5,7 @@ import com.example.spb_api.entity.WeatherEntity;
 import com.example.spb_api.mapper.WeatherMapper;
 import com.example.spb_api.repository.WeatherRepository;
 import com.example.spb_api.service.WeatherService;
-import com.example.spb_api.util.StringUtil;
+import com.example.spb_api.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -29,7 +28,7 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public WeatherDTO getWeatherByCityName(String city) {
-        WeatherEntity weatherEntity = weatherRepository.findLatestByCity(StringUtil.cleanString(city));
+        WeatherEntity weatherEntity = weatherRepository.findLatestByCity(Utils.cleanString(city));
         if (weatherEntity == null) {
             throw new RuntimeException();
         }
@@ -58,6 +57,6 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public List<WeatherEntity> getWeathersByCityName(String city) {
-        return weatherRepository.findByCity(StringUtil.cleanString(city));
+        return weatherRepository.findByCity(Utils.cleanString(city));
     }
 }

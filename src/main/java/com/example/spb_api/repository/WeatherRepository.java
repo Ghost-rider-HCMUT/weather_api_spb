@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface WeatherRepository extends JpaRepository<WeatherEntity, Long> {
     // Get All Latest

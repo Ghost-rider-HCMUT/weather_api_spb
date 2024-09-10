@@ -5,7 +5,6 @@ import com.example.spb_api.entity.WeatherEntity;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface WeatherService {
     Page<WeatherEntity> getAllCityWeather(Integer pageNo, Integer pageSize);

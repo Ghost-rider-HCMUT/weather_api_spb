@@ -51,5 +51,6 @@ public class WeatherDTO {
 
     @JsonProperty("time")
     private LocalDateTime time;
+
 }
 

@@ -2,7 +2,7 @@ package com.example.spb_api.schedule;
 
 import com.example.spb_api.entity.WeatherEntity;
 import com.example.spb_api.repository.WeatherRepository;
-import com.example.spb_api.util.StringUtil;
+import com.example.spb_api.util.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,34 +38,55 @@ public class WeatherScheduler {
     @Value("${app.api-key}")
     private String apiKey;
 
-    @Scheduled(fixedRateString = "${app.time-interval}")
+    @Value("${app.expiration-data}")
+    private int expirationTime;
+
+    @Scheduled(fixedRateString = "${app.time-schedule}")
     public void fetchDataAndUpdateDB() {
-        String lastUpdatedTime = null;
+        AtomicReference<String> lastUpdatedTime = new AtomicReference<>();
         long startTime = System.currentTimeMillis();
-        for (String province : fileContent) {
-            try {
-                String url = String.format("%s?key=%s&q=%s", apiUrl, apiKey, province);
-                String jsonResponse = Optional.ofNullable(restTemplate.getForObject(url, String.class))
-                        .orElseThrow(() -> new RuntimeException("Failed to fetch data for " + province));
 
-                JsonNode jsonNode = objectMapper.readTree(jsonResponse);
-                JsonNode currentNode = jsonNode.get("current");
+        try (ExecutorService executorService = Executors.newFixedThreadPool(5)) {
+            List<Future<?>> futures = new ArrayList<>();
 
-                WeatherEntity weatherEntity = buildWeatherEntity(currentNode, StringUtil.cleanString(province));
-                weatherRepository.save(weatherEntity);
+            for (String province : fileContent) {
+                futures.add(executorService.submit(() -> {
+                    try {
+                        String url = String.format("%s?key=%s&q=%s", apiUrl, apiKey, province);
+                        String jsonResponse = Optional.ofNullable(restTemplate.getForObject(url, String.class))
+                                .orElseThrow(() -> new RuntimeException("Failed to fetch data for " + province));
 
-                lastUpdatedTime = currentNode.get("last_updated").asText();
-                log.info("Updated weather data for {}", province);
-            } catch (Exception e) {
-                log.error("Error processing weather data for {}: {}", province, e.getMessage());
+                        JsonNode jsonNode = objectMapper.readTree(jsonResponse);
+                        JsonNode currentNode = jsonNode.get("current");
+
+                        WeatherEntity weatherEntity = buildWeatherEntity(currentNode, Utils.cleanString(province));
+                        weatherRepository.save(weatherEntity);
+
+                        String currentUpdatedTime = currentNode.get("last_updated").asText();
+                        lastUpdatedTime
+                                .updateAndGet(prevTime -> prevTime == null || currentUpdatedTime.compareTo(prevTime) > 0
+                                        ? currentUpdatedTime
+                                        : prevTime);
+                        log.info("Updated weather data for {}", province);
+                    } catch (Exception e) {
+                        log.error("Error processing weather data for {}: {}", province, e.getMessage());
+                    }
+                }));
+            }
+
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    log.error("Error waiting for task to complete: {}", e.getMessage());
+                }
             }
         }
 
-        if (lastUpdatedTime != null) {
-            deleteOldData(lastUpdatedTime);
+        if (lastUpdatedTime.get() != null) {
+            deleteOldData(lastUpdatedTime.get());
         }
 
-        log.info("FetchDataAndUpdateDB completed successfully!");
         long endTime = System.currentTimeMillis();
         log.info("FetchDataAndUpdateDB completed in {} ms", (endTime - startTime));
     }
@@ -84,7 +112,7 @@ public class WeatherScheduler {
 
     private void deleteOldData(String lastUpdatedTime) {
         try {
-            LocalDateTime cutoffTime = StringUtil.handleTime(lastUpdatedTime);
+            LocalDateTime cutoffTime = Utils.handleTime(lastUpdatedTime).minusHours(expirationTime);
             weatherRepository.deleteByTimeBefore(cutoffTime);
             log.info("Deleted weather data older than {}", cutoffTime);
         } catch (Exception e) {
