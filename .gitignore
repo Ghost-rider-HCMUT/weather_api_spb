@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .docker/
+!**/src/main/**/.docker/
 ### STS ###
 .apt_generated
 .classpath
