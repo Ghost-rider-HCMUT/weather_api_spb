@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class SendMailScheduler {
     private final SendMailService mailService;
 
-    @Scheduled(fixedRateString = "${mail.send.interval:300000}")
+    @Scheduled(cron = "${spring.mail.send.cron}")
     public void sendMail() {
         Mail mail = Mail.builder()
                 .mailTo("phonghq2103@gmail.com")

@@ -23,6 +23,8 @@ spring:
           connection timeout: 5000
           timeout: 5000
           write timeout: 5000
+    send:
+      cron: 0 0 0 * * ?
 
 server:
   port: 8080
@@ -30,5 +32,5 @@ server:
 app:
   api-url: http://api.weatherapi.com/v1/current.json
   api-key: 238a10ec69e8409f88315300242308
-  time-schedule: 900000
+  time-schedule: 900_000
   expiration-data: 24
