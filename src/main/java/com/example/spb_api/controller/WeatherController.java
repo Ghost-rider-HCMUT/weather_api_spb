@@ -1,16 +1,17 @@
 package com.example.spb_api.controller;
 
 import com.example.spb_api.dto.weather.WeatherDTO;
-import com.example.spb_api.entity.WeatherEntity;
 import com.example.spb_api.i18n.I18nUtil;
 import com.example.spb_api.service.WeatherService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,18 +21,20 @@ public class WeatherController {
     private final I18nUtil i18nUtil;
 
     @GetMapping
-    public ResponseEntity<Page<WeatherEntity>> getWeather(
+    public ResponseEntity<Page<WeatherDTO>> getWeather(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize) {
-        Page<WeatherEntity> weatherEntityList = weatherService.getAllCityWeather(pageNo, pageSize);
-        System.out.println(i18nUtil.getMessage("success.message"));
-        return ResponseEntity.ok(weatherEntityList);
+        Page<WeatherDTO> weatherDTOList = weatherService.getAllCityWeather(pageNo, pageSize);
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = i18nUtil.getMessage("success.message", String.valueOf(locale));
+        System.out.println(message);
+        return ResponseEntity.ok(weatherDTOList);
     }
 
     @PostMapping
-    public ResponseEntity<WeatherDTO> createWeather(@RequestBody WeatherEntity weatherEntity) {
-        WeatherDTO weatherDTO = weatherService.createWeather(weatherEntity);
-        return ResponseEntity.status(HttpStatus.CREATED).body(weatherDTO);
+    public ResponseEntity<WeatherDTO> createWeather(@RequestBody WeatherDTO weatherDTO) {
+        WeatherDTO createdWeatherDTO = weatherService.createWeather(weatherDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdWeatherDTO);
     }
 
     @GetMapping("/{city}")
@@ -43,7 +46,7 @@ public class WeatherController {
     @PutMapping("/{city}")
     public ResponseEntity<WeatherDTO> updateWeather(@PathVariable String city, @RequestBody WeatherDTO weatherDTO) {
         WeatherDTO updatedWeatherDTO = weatherService.updateWeatherByCityName(city, weatherDTO);
-        return new ResponseEntity<>(updatedWeatherDTO, HttpStatus.OK);
+        return ResponseEntity.ok(updatedWeatherDTO);
     }
 
     @DeleteMapping("/{city}")
@@ -53,8 +56,8 @@ public class WeatherController {
     }
 
     @GetMapping("/search/{city}")
-    public ResponseEntity<List<WeatherEntity>> searchWeather(@PathVariable String city) {
-        List<WeatherEntity> listWeathersByCity = weatherService.getWeathersByCityName(city);
-        return ResponseEntity.ok(listWeathersByCity);
+    public ResponseEntity<List<WeatherDTO>> searchWeather(@PathVariable String city) {
+        List<WeatherDTO> weatherDTOList = weatherService.getWeathersByCityName(city);
+        return ResponseEntity.ok(weatherDTOList);
     }
 }

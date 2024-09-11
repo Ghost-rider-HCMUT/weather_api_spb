@@ -36,4 +36,12 @@ public interface WeatherRepository extends JpaRepository<WeatherEntity, Long> {
     @Transactional
     @Query("DELETE FROM WeatherEntity w WHERE w.time < :time")
     void deleteByTimeBefore(LocalDateTime time);
+
+    // Get Weather AVG by City
+    @Query("SELECT w.city, " +
+            "AVG(w.temp), AVG(w.windKph), AVG(w.feelsLike), " +
+            "AVG(w.pressureIn), AVG(w.humidity), AVG(w.heatIndex), AVG(w.dewPoint), " +
+            "AVG(w.precip), AVG(w.gustKph), AVG(w.isDay) " +
+            "FROM WeatherEntity w GROUP BY w.city")
+    List<Object[]> getAverageWeatherByCity();
 }

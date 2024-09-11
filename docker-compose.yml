@@ -1,4 +1,4 @@
-version: '4.34'
+version: ''
 
 services:
   app:
@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./docker_application.properties:/app/application.properties:ro
+      - ./docker_application.yml:/app/application.yml:ro
     depends_on:
       - db
 
