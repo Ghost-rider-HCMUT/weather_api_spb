@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 public class SendMailScheduler {
     private final SendMailService mailService;
 
-    @Scheduled(cron = "${spring.mail.send.cron}")
+    @Scheduled(fixedRateString = "${app.time-schedule}")
+//    @Scheduled(cron = "${spring.mail.send.cron}")
     public void sendMail() {
         Mail mail = Mail.builder()
                 .mailTo("phonghq2103@gmail.com")
