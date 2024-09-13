@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: spb_api
+  datasource:
+    url: jdbc:mysql://db:3306/ocb?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: phongghoangg2001@gmail.com
+    password: szjjewduqyjexyic
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection timeout: 5000
+          timeout: 5000
+          write timeout: 5000
+    send:
+      cron: 0 0 0 * * ?
+
+server:
+  port: 8080
+
+app:
+  api-url: http://api.weatherapi.com/v1/current.json
+  api-key: 238a10ec69e8409f88315300242308
+  time-interval: 900_000
+  expiration-data: 24
